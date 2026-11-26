@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+.hallmark/
+.DS_Store
+Thumbs.db
+
+# Keep raw official PDFs and 4 MB single-file local bundle out of Git
+# (dist/ contains the clean, fast web bundle ready for Cloudflare Pages)
+*.pdf
+Taiwan Driving Practice.html

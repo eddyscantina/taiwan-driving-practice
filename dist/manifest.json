@@ -1,0 +1,22 @@
+{
+  "name": "Taiwan Driving Practice \u2014 English Foreigner Guide",
+  "short_name": "TW Driving",
+  "description": "Free 100% English study app and foreigner guide for Taiwan\u2019s 2026 scooter and car driving tests.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#eef1f5",
+  "theme_color": "#162236",
+  "icons": [
+    {
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

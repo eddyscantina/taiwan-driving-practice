@@ -1,0 +1,1347 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#162236">
+<meta name="description" content="Free 100% English study app, official 2026 question banks, Chinese road-sign guide, and DMV walkthrough for foreigners getting a scooter or car license in Taiwan.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Taiwan Driving Practice — Free English Guide for Foreigners">
+<meta property="og:description" content="Study all 2,032 official 2026 Taiwan scooter & car test questions in English, learn key Chinese road signs, and navigate Taiwan's DMV portals easily.">
+<meta name="twitter:card" content="summary">
+<title>Taiwan Driving Practice — English Foreigner Guide</title>
+<link rel="icon" type="image/svg+xml" href="./favicon.svg">
+<link rel="apple-touch-icon" href="./icon-192.png">
+<link rel="manifest" href="./manifest.json">
+<style>
+/* Wayfind: crisp high-contrast route board, official test illustrations, 100% offline & mobile-first. */
+:root {
+  --paper:#eef1f5; --surface:#fcfdff; --ink:#162236; --muted:#4c5c72;
+  --line:#aeb8c7; --accent:#2045bb; --accent-soft:#e8eefc; --amber:#ffd881;
+  --good:#17634a; --good-soft:#e6f4ee; --bad:#a13931; --bad-soft:#fbeceb;
+  --warn-soft:#fff7e0; --white:#f9fbff;
+  --heading:"Chivo Mono", "Cascadia Mono", ui-monospace, monospace;
+  --body:system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+* { box-sizing:border-box }
+html,body { overflow-x:clip }
+body { margin:0; background:var(--paper); color:var(--ink); font:1rem/1.55 var(--body) }
+main { max-width:960px; margin:auto; padding:clamp(14px,3.5vw,36px) }
+header { display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; border-bottom:2px solid var(--ink); padding-bottom:14px }
+.brand { display:flex; flex-direction:column; gap:2px }
+.brand strong { font-family:var(--heading); font-size:1.05rem }
+.brand small { font-size:.82rem; color:var(--muted) }
+h1,h2,h3,.timer,.stat-val,.hanzi { font-family:var(--heading) }
+h1,h2,h3 { overflow-wrap:break-word; min-width:0; line-height:1.18; text-wrap:balance }
+h1 { font-size:clamp(1.65rem,5vw,3rem); margin:0 }
+h2 { font-size:1.2rem; margin:0 0 12px }
+h3 { font-size:1.02rem; margin:18px 0 8px }
+nav,.actions,.subnav,.inline-row { display:flex; gap:8px; flex-wrap:wrap; align-items:center }
+.subnav { margin:14px 0 0; padding-bottom:12px; border-bottom:1px solid var(--line) }
+.subnav button { min-height:40px; padding:6px 14px; font-size:.95rem }
+button,select,input[type="search"],input[type="date"] {
+  font:inherit; min-height:44px; color:var(--ink); background:var(--surface);
+  border:1px solid var(--ink); padding:8px 14px
+}
+input[type="search"],input[type="date"] { width:100%; border-color:var(--line) }
+input[type="search"]:focus,input[type="date"]:focus { border-color:var(--accent) }
+#bookmark-btn { white-space:nowrap; flex-shrink:0 }
+.roc-box { background:var(--accent-soft); border:1px solid var(--accent); padding:14px; margin:12px 0 18px }
+.roc-row { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:8px; align-items:end; margin-top:8px }
+.roc-result { font-family:var(--heading); font-size:1.35rem; font-weight:700; color:var(--ink); margin:10px 0 4px }
+.phrase-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(260px, 1fr)); gap:10px; margin:12px 0 }
+.phrase-card { border:2px solid var(--ink); background:var(--white); padding:14px }
+.phrase-zh { font-size:1.3rem; font-weight:700; color:var(--ink); display:block; margin:4px 0 }
+.phrase-py { font-size:.84rem; color:var(--accent); display:block }
+button { cursor:pointer }
+button:hover:not(:disabled) { border-color:var(--accent); text-decoration:underline }
+button:disabled { cursor:default }
+button:disabled:not(.correct):not(.incorrect) { color:var(--muted); border-color:var(--line) }
+button:active:not(:disabled) { box-shadow:inset 0 0 0 2px var(--line) }
+button.primary,button[aria-pressed="true"] { color:var(--white); background:var(--accent); border-color:var(--accent) }
+button.subtle { border-color:var(--line); color:var(--muted) }
+button.danger { border-color:var(--bad); color:var(--bad) }
+button.saved-btn { background:var(--warn-soft); border-color:#b58100; color:#5a3e00; font-weight:600 }
+a { color:var(--accent); text-underline-offset:3px; overflow-wrap:anywhere }
+:focus-visible { outline:3px solid var(--accent); outline-offset:3px }
+
+.route { margin:18px 0; padding:clamp(16px,3.5vw,28px); background:var(--ink); color:var(--white) }
+.route p { margin:8px 0 0; color:var(--amber) }
+.stats { display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:8px; margin-top:16px }
+.stat { background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.16); padding:8px 10px }
+.stat-val { font-size:1.15rem; font-weight:700; color:var(--white); display:block }
+.stat-lbl { font-size:.78rem; color:#c8d3e3 }
+
+.layout { display:grid; grid-template-columns:minmax(0, 1.35fr) minmax(0, 1fr); gap:16px }
+.study-actions { display:grid; grid-template-columns:minmax(0,1fr); gap:8px; margin-top:4px }
+.form-row { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:8px; margin-bottom:12px }
+.panel { border:1px solid var(--line); background:var(--surface); padding:clamp(16px,3vw,24px); margin-bottom:16px }
+.panel h2:first-child { margin-top:0 }
+.panel p { overflow-wrap:anywhere }
+.muted,small { color:var(--muted) }
+.badge { display:inline-block; font-size:.75rem; font-weight:600; padding:2px 7px; border:1px solid var(--line); background:var(--paper); color:var(--ink); vertical-align:middle; margin-left:6px }
+.badge.en { background:var(--good-soft); border-color:var(--good); color:var(--good) }
+.badge.zh { background:var(--warn-soft); border-color:#b58100; color:#5a3e00 }
+.badge.pass { background:var(--good-soft); border-color:var(--good); color:var(--good) }
+.badge.fail { background:var(--bad-soft); border-color:var(--bad); color:var(--bad) }
+
+.link-list { display:grid; gap:10px; margin-top:12px }
+.link-item { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:6px; padding-top:8px; border-top:1px dashed var(--line) }
+.link-item:first-child { border-top:none; padding-top:0 }
+select { max-width:100%; width:100%; margin:4px 0 12px }
+label.field-lbl { display:block; font-size:.9rem; font-weight:600; margin-top:4px }
+
+.status { display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; margin:16px 0 8px }
+progress { width:100%; accent-color:var(--accent); margin-bottom:16px }
+.q-head { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; margin-bottom:14px }
+.question { font-size:clamp(1.18rem,3.6vw,1.65rem); margin:0 }
+.images { display:flex; flex-wrap:wrap; justify-content:center; gap:12px; background:var(--white); padding:8px; border:1px solid var(--line); margin-bottom:18px }
+.images:empty { display:none }
+img { max-width:100%; width:auto; height:auto; object-fit:contain; max-height:330px }
+.answers { display:grid; gap:8px }
+.answers button { text-align:left; display:flex; align-items:center; gap:12px; line-height:1.4 }
+.answers img { max-width:min(170px, 65%); max-height:145px }
+.choice-label { min-width:2ch; font-weight:700; font-family:var(--heading) }
+.answers button.correct { color:var(--good); background:var(--good-soft); border:2px solid var(--good) }
+.answers button.incorrect { color:var(--bad); background:var(--bad-soft); border:2px solid var(--bad) }
+.feedback { min-height:1.4rem; margin:14px 0 6px; font-weight:600 }
+.tip-box { background:var(--accent-soft); border-left:4px solid var(--accent); padding:10px 14px; margin:10px 0 14px; font-size:.94rem }
+.video-box { background:var(--warn-soft); border:1px solid #d4a62a; padding:12px 14px; margin-bottom:14px }
+.next { justify-content:space-between; margin-top:16px }
+.kbd-hint { font-size:.82rem; color:var(--muted); margin-top:10px }
+
+details { margin:12px 0 }
+details summary { cursor:pointer; font-weight:600; padding:6px 0 }
+.topic-row { display:flex; justify-content:space-between; gap:8px; padding:6px 0; border-bottom:1px solid var(--paper); font-size:.92rem }
+.check { display:flex; min-height:44px; gap:12px; align-items:flex-start; padding:6px 0; border-bottom:1px solid var(--paper) }
+.check input { accent-color:var(--accent); width:18px; height:18px; flex-shrink:0; margin-top:3px }
+
+.sign-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(230px, 1fr)); gap:10px; margin:12px 0 }
+.sign-card { border:1px solid var(--line); background:var(--white); padding:12px }
+.hanzi { font-size:1.35rem; font-weight:700; color:var(--ink); display:block; margin-bottom:2px }
+.pinyin { font-size:.82rem; color:var(--accent); display:block; margin-bottom:4px }
+.rule-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(260px, 1fr)); gap:12px; margin:12px 0 }
+.rule-card { border:1px solid var(--line); background:var(--white); padding:14px }
+.rule-card strong { display:block; margin-bottom:4px }
+.steps-ol { padding-left:20px; margin:8px 0 }
+.steps-ol li { margin-bottom:6px }
+
+.review-card { border:1px solid var(--line); background:var(--white); padding:12px 14px; margin:10px 0 }
+.review-card .q-title { font-weight:700; margin-bottom:6px }
+.review-card .your-ans { color:var(--bad); font-size:.93rem }
+.review-card .right-ans { color:var(--good); font-size:.93rem; font-weight:600 }
+
+.browse-card { border:1px solid var(--line); background:var(--white); padding:14px; margin-bottom:10px }
+.browse-meta { display:flex; justify-content:space-between; gap:8px; flex-wrap:wrap; font-size:.82rem; color:var(--muted); margin-bottom:6px }
+.browse-choices { margin:8px 0 0; padding-left:18px }
+.browse-choices li.is-correct { color:var(--good); font-weight:700 }
+
+footer { border-top:1px solid var(--line); margin-top:24px; padding-top:12px; display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px }
+@media(max-width:680px) {
+  .layout,.form-row,.roc-row { grid-template-columns:minmax(0,1fr) }
+  .stats { grid-template-columns:repeat(2, minmax(0,1fr)) }
+}
+</style>
+</head>
+<body>
+<main>
+<header>
+  <div class="brand">
+    <strong>Taiwan Driving Practice</strong>
+    <small>100% English · 2026 (ROC Year 115) Official Question Banks</small>
+  </div>
+  <nav id="track-nav" aria-label="Vehicle track"></nav>
+</header>
+<nav id="view-nav" class="subnav" aria-label="App sections"></nav>
+<section id="screen">
+  <h1>Study for your Taiwan driving test</h1>
+  <noscript>Enable JavaScript to use offline practice, or open the <a href="https://www.mvdis.gov.tw/m3-simulator-drv/index">official MVDIS practice simulator</a>.</noscript>
+</section>
+<footer>
+  <small><strong>Unofficial free community study tool</strong> — not affiliated with Taiwan’s government. Built as a free gift for foreigners in Taiwan.</small>
+  <small>Data source: Highway Bureau, MOTC (交通部公路局), 2026 (ROC Year 115) English Question Banks — used under <a href="https://data.gov.tw/license" target="_blank" rel="noopener noreferrer">OGDL-Taiwan-1.0</a> (CC BY 4.0 compatible) &amp; <a href="https://www.thb.gov.tw/en/cp.aspx?n=860" target="_blank" rel="noopener noreferrer">THB Open Data Terms</a>.</small>
+  <small id="storage-note"></small>
+</footer>
+</main>
+<script type="application/json" id="bank">null</script>
+<script>
+'use strict';
+const embeddedBanks = JSON.parse(document.querySelector('#bank').textContent);
+const banks = embeddedBanks || {scooter:null, car:null};
+const bankLoads = {};
+const screen = document.querySelector('#screen');
+const trackNav = document.querySelector('#track-nav');
+const viewNav = document.querySelector('#view-nav');
+const storageNote = document.querySelector('#storage-note');
+
+async function ensureTrackLoaded(name) {
+  if (banks[name]) return banks[name];
+  if (!bankLoads[name]) {
+    bankLoads[name] = fetch('data/' + name + '.json')
+      .then(res => {
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        return res.json();
+      })
+      .then(data => { banks[name] = data; return data; })
+      .catch(err => { delete bankLoads[name]; throw err; });
+  }
+  return bankLoads[name];
+}
+
+const URLS = {
+  mock: 'https://www.mvdis.gov.tw/m3-simulator-drv/index',
+  booking: 'https://www.mvdis.gov.tw/m3-emv-trn/exm/locations',
+  hpt: 'https://hpt.thb.gov.tw/videotest',
+  thbEn: 'https://www.thb.gov.tw/en/',
+  reciprocity: 'https://www.thb.gov.tw/en/cp.aspx?n=683',
+  scooterBank: 'https://www.thb.gov.tw/en/News_Download.aspx?n=12579&sms=12831',
+  scooterRules: 'https://www.thb.gov.tw/en/cp.aspx?n=594',
+  scooterVideos: 'https://reurl.cc/M4zqRm',
+  carBank: 'https://www.thb.gov.tw/en/News_Download.aspx?n=12573&sms=12831',
+  carRules: 'https://www.thb.gov.tw/en/cp.aspx?n=888',
+  carVideos: 'https://reurl.cc/zQj3Ge'
+};
+
+const config = {
+  scooter: {
+    label: 'Scooter',
+    fullName: 'Ordinary Heavy / Light Motorcycle (≤250cc)',
+    title: 'Prepare for your Taiwan scooter test',
+    edition: '2026 (ROC Year 115)',
+    source: URLS.scooterBank,
+    rules: URLS.scooterRules,
+    hazard: URLS.scooterBank,
+    examNote: '50 multiple-choice questions · 30 minutes · 85% to pass (43/50, max 7 mistakes). Includes 5 video questions on the official test.',
+    checks: [
+      'Confirm valid ARC, APRC, or Employment Gold Card (valid for more than 6 months) plus original passport.',
+      'Check if your home country/state qualifies for a direct foreign motorcycle license exchange before booking an exam.',
+      'Get a driver medical checkup (體檢, ~NT$150–250) at a designated hospital or clinic and prepare 3 recent 1-inch ID photos.',
+      'Complete the mandatory online Motorcycle Hazard Perception pre-test (hpt.thb.gov.tw/videotest) BEFORE booking on MVDIS.',
+      'Reserve your English written + skills test date online via MVDIS (mvdis.gov.tw) — bring your ARC, passport, photos, health form, and ~NT$450 cash.',
+      'Practice the practical skills course (7-second straight balance beam, railway crossing, pedestrian stop, two-stage left turn) and arrange a test scooter (most offices rent one for ~NT$50).',
+      'First-time Taiwan motorcycle riders must attend the 2-hour road safety lecture (confirm English session times with your DMV office) to pick up your license.'
+    ]
+  },
+  car: {
+    label: 'Car',
+    fullName: 'Ordinary Small Vehicle (Automatic / Manual)',
+    title: 'Prepare for your Taiwan car test',
+    edition: '2026 (ROC Year 115)',
+    source: URLS.carBank,
+    rules: URLS.carRules,
+    hazard: URLS.carBank,
+    examNote: '50 multiple-choice questions · 30 minutes · 85% to pass (43/50, max 7 mistakes). True/False was retired in 2026; real exam includes 5 video questions.',
+    checks: [
+      'Confirm valid ARC, APRC, or Employment Gold Card (valid for more than 6 months) plus original passport.',
+      'Check Foreign License Exchange reciprocity FIRST — many countries/states can exchange a valid authenticated car license without taking the exam.',
+      'If exchanging: get your foreign license authenticated by your country’s representative office / TECO (plus notarized translation if not in English) and prepare your entry/exit record.',
+      'If taking the exam: get a driver medical checkup (體檢, ~NT$150–250) at a designated clinic and prepare 3 recent 1-inch ID photos.',
+      'Check the learner’s permit requirement early: taking the exam independently requires holding a Taiwan learner’s permit for 3+ months (or graduating from a registered driving school in ~5 weeks).',
+      'Book your English written test, closed-course skills test, and on-road driving test via MVDIS or through your driving school.'
+    ]
+  }
+};
+
+const ROAD_SIGNS = [
+  ['停', 'Tíng', 'STOP — Come to a complete stop behind the white line before proceeding.'],
+  ['慢', 'Màn', 'SLOW — Reduce speed and watch carefully for cross traffic or hazards.'],
+  ['讓', 'Ràng', 'YIELD — Give right-of-way to vehicles on the main road (often paired with an inverted white triangle).'],
+  ['機慢車兩段左轉', 'Jīmànchē liǎngduàn zuǒzhuǎn', 'Two-Stage Left Turn Required — White/green-plate scooters must NOT turn left directly; enter the right-side waiting box instead.'],
+  ['待轉區', 'Dàizhuǎnqū', 'Scooter Left-Turn Waiting Box — Painted white rectangle on the far right corner of an intersection.'],
+  ['禁行機車', 'Jìnxíng jīchē', 'No Motorcycles / Scooters — Painted on fast inner lanes; white-plate scooters may not ride in this lane.'],
+  ['機車優先', 'Jīchē yōuxiān', 'Scooter Priority Lane — Outer lane prioritized for scooters and slow vehicles.'],
+  ['單行道', 'Dānxíngdào', 'One-Way Street — Travel only in the direction of the arrow.'],
+  ['禁止進入', 'Jìnzhǐ jìnrù', 'Do Not Enter — Red circle with a horizontal white bar.'],
+  ['禁止停車', 'Jìnzhǐ tíngchē', 'No Parking — Brief drop-off/loading (<3 min with driver present) only.'],
+  ['禁止臨時停車', 'Jìnzhǐ línshí tíngchē', 'No Stopping Anytime — Do not stop even briefly (matches red curb lines).'],
+  ['禮讓行人', 'Lǐràng xíngrén', 'Yield to Pedestrians — Stop and keep at least 3 meters from pedestrians in a crosswalk.'],
+  ['減速慢行', 'Jiǎnsù mànxíng', 'Slow Down — Common before curves, alleys, and school zones.'],
+  ['圓環', 'Yuánhuán', 'Roundabout — Yield to traffic already inside the traffic circle.'],
+  ['學校', 'Xuéxiào', 'School Zone — Slow down and watch for children crossing.'],
+  ['高速公路', 'Gāosù gōnglù', 'National Freeway — Cars only (no white/yellow-plate scooters).'],
+  ['快速道路', 'Kuàisù dàolù', 'Expressway — Cars plus yellow (>250cc) & red (>550cc) motorcycles; NO white-plate scooters.'],
+  ['監理所 / 監理站', 'Jiānlǐsuǒ / Jiānlǐzhàn', 'Motor Vehicles Office (DMV) — Where you take exams, renew/exchange licenses, and register vehicles.']
+];
+
+const FOREIGNER_TIPS = [
+  { test: /two-stage|waiting area|left-turn waiting/i,
+    tip: 'Two-stage left turn (待轉): On multi-lane roads with a blue hook-turn sign, ride straight to the white box on the far right corner, face left, and wait for the cross-street green light.' },
+  { test: /\bROC\b|Republic of China|Year 1\d\d/i,
+    tip: 'Taiwan ROC Calendar: Add 1911 to any ROC year to get the Western year (e.g., Year 115 = 2026, Year 112 = 2023, Year 102 = 2013).' },
+  { test: /light motorcycle|heavy motorcycle|c\.c\.|\bcc\b/i,
+    tip: 'Taiwan Plate Colors: Green = Light (<50cc) · White = Ordinary Heavy (51–250cc, normal city scooter) · Yellow = Large Heavy (251–550cc) · Red = Large Heavy (>550cc).' },
+  { test: /red line|yellow line|curb|sidewalk/i,
+    tip: 'Taiwan Curb Lines: Solid Red = NO stopping or parking anytime · Solid Yellow = No parking 7am–8pm (max 3-min drop-off with engine/driver ready) · White = Parking allowed unless marked.' },
+  { test: /alcohol|drunk|breathalyzer|0\.15|0\.25/i,
+    tip: 'Strict DUI Law: Breath alcohol ≥0.15 mg/L (blood ≥0.03%) triggers heavy fines & license suspension; ≥0.25 mg/L is a criminal offense.' },
+  { test: /pedestrian|crosswalk|zebra/i,
+    tip: 'Pedestrian Priority: Always stop and keep at least 3 meters (about 3 zebra stripes) away from pedestrians on a crosswalk — fines reach NT$6,000.' },
+  { test: /supervision authority|motor vehicle office/i,
+    tip: '“Motor vehicle supervision authority” refers to Taiwan’s Motor Vehicles Office / DMV (監理所, Jiānlǐsuǒ).' },
+  { test: /right turn.*red|red light.*right/i,
+    tip: 'No Right on Red: Turning right on a red light is ILLEGAL in Taiwan unless a green right-arrow signal is illuminated.' },
+  { test: /NT\$|NTD/i,
+    tip: 'Currency Reference: NT$1,000 is roughly US$30–32 (exchange rates vary).' }
+];
+
+const storageKey = 'tw-driving-practice-v1';
+const emptyTrack = () => ({answers:{}, checks:{}, bookmarks:{}, mock:null, scores:[]});
+let saved = {scooter:emptyTrack(), car:emptyTrack()};
+let storageWorks = true;
+try {
+  const stored = JSON.parse(localStorage.getItem(storageKey));
+  if (stored?.scooter?.answers && stored?.car?.answers) {
+    saved = {
+      scooter: {...emptyTrack(), ...stored.scooter, bookmarks: stored.scooter.bookmarks || {}},
+      car: {...emptyTrack(), ...stored.car, bookmarks: stored.car.bookmarks || {}}
+    };
+  }
+  localStorage.setItem(storageKey, JSON.stringify(saved));
+} catch {
+  storageWorks = false;
+}
+storageNote.textContent = storageWorks
+  ? 'Progress & bookmarks saved locally in this browser.'
+  : 'Browser storage unavailable — progress lasts for this tab only.';
+
+let track = 'scooter';
+let view = 'study';
+let session = null;
+let timer = null;
+let browseState = {query:'', topic:'', filter:'all', showAnswers:true, limit:30};
+
+function save() {
+  try {
+    localStorage.setItem(storageKey, JSON.stringify(saved));
+  } catch {
+    storageWorks = false;
+  }
+}
+
+function el(tag, content, cls) {
+  const item = document.createElement(tag);
+  if (content !== undefined && content !== '') item.textContent = content;
+  if (cls) item.className = cls;
+  return item;
+}
+
+function btn(label, action, cls) {
+  const item = el('button', label, cls);
+  item.type = 'button';
+  item.addEventListener('click', action);
+  return item;
+}
+
+function link(label, address) {
+  const item = el('a', label);
+  item.href = address;
+  item.target = '_blank';
+  item.rel = 'noopener noreferrer';
+  return item;
+}
+
+function heading(tag, text, cls) {
+  const item = el(tag, text, cls);
+  item.tabIndex = -1;
+  return item;
+}
+
+function getTip(question) {
+  const combined = question.prompt + ' ' + question.choices.join(' ');
+  const hit = FOREIGNER_TIPS.find(item => item.test.test(combined));
+  return hit ? hit.tip : '';
+}
+
+function leave() {
+  if (session && !confirm('End this quiz session and leave?')) return false;
+  clearInterval(timer);
+  session = null;
+  return true;
+}
+
+function renderChrome() {
+  trackNav.replaceChildren();
+  for (const key of Object.keys(config)) {
+    const tab = btn(config[key].label, () => {
+      if (key === track && !session) return;
+      if (!leave()) return;
+      track = key;
+      browseState.topic = '';
+      browseState.limit = 30;
+      renderView(true);
+    });
+    tab.setAttribute('aria-pressed', String(track === key));
+    trackNav.append(tab);
+  }
+  const views = [
+    ['study', 'Study'],
+    ['official', 'Official Gov Tests'],
+    ['browse', 'Search Bank'],
+    ['guide', 'Foreigner Guide'],
+    ['checklist', 'Checklist']
+  ];
+  viewNav.replaceChildren();
+  for (const [key, label] of views) {
+    const tab = btn(label, () => {
+      if (key === view && !session) return;
+      if (!leave()) return;
+      view = key;
+      renderView(true);
+    });
+    tab.setAttribute('aria-pressed', String(!session && view === key));
+    viewNav.append(tab);
+  }
+}
+
+function renderView(focus = false) {
+  renderChrome();
+  if (view === 'guide') return renderGuide(focus);
+  if (view === 'checklist') return renderChecklist(focus);
+  if (!banks[track]) {
+    const loading = el('section', '', 'panel');
+    loading.append(heading('h1', 'Loading ' + config[track].label.toLowerCase() + ' question bank…'), el('p', 'Fetching the official 2026 English questions.', 'muted'));
+    screen.replaceChildren(loading);
+    const wantedTrack = track;
+    const wantedView = view;
+    ensureTrackLoaded(wantedTrack)
+      .then(() => {
+        if (track === wantedTrack && view === wantedView && !session) renderView(focus);
+        // Gently preload the other track for instant switching & offline caching
+        const other = wantedTrack === 'scooter' ? 'car' : 'scooter';
+        if (!banks[other]) ensureTrackLoaded(other).catch(() => {});
+      })
+      .catch(() => {
+        if (track !== wantedTrack) return;
+        const err = el('section', '', 'panel');
+        err.append(
+          heading('h1', 'Could not load question bank'),
+          el('p', 'Check your connection and try again.'),
+          btn('Retry', () => renderView(true), 'primary')
+        );
+        screen.replaceChildren(err);
+      });
+    return;
+  }
+  if (view === 'official') return renderOfficialTests(focus);
+  if (view === 'browse') return renderBrowse(focus);
+  return renderStudy(focus);
+}
+
+function trackStats() {
+  const qs = banks[track];
+  const history = saved[track];
+  const ids = Object.keys(history.answers);
+  const correct = ids.filter(id => history.answers[id] === true).length;
+  const missed = qs.filter(q => history.answers[q.id] === false);
+  const bookmarked = qs.filter(q => history.bookmarks[q.id]);
+  const accuracy = ids.length ? Math.round((correct / ids.length) * 100) : 0;
+  return {total: qs.length, attempted: ids.length, correct, missed, bookmarked, accuracy};
+}
+
+function renderStudy(focus = false) {
+  const info = config[track];
+  const questions = banks[track];
+  const written = questions.filter(q => !q.video);
+  const hazards = questions.filter(q => q.video);
+  const history = saved[track];
+  const stats = trackStats();
+
+  const hero = el('section', '', 'route');
+  const title = heading('h1', info.title);
+  hero.append(
+    title,
+    el('p', written.length.toLocaleString() + ' written questions and ' + hazards.length + ' video questions · ' + info.edition)
+  );
+  const statGrid = el('div', '', 'stats');
+  [
+    [stats.attempted + ' / ' + stats.total, 'Attempted'],
+    [stats.attempted ? stats.accuracy + '%' : '—', 'Accuracy'],
+    [String(stats.missed.length), 'Missed to review'],
+    [String(stats.bookmarked.length), 'Saved bookmarks']
+  ].forEach(([val, lbl]) => {
+    const box = el('div', '', 'stat');
+    box.append(el('span', val, 'stat-val'), el('span', lbl, 'stat-lbl'));
+    statGrid.append(box);
+  });
+  hero.append(statGrid);
+
+  const layout = el('div', '', 'layout');
+
+  // Left panel: Practice
+  const study = el('section', '', 'panel');
+  study.append(el('h2', 'Practice questions'));
+
+  const topicLbl = el('label', 'Topic', 'field-lbl');
+  const topicSel = el('select');
+  topicSel.id = 'topics';
+  topicLbl.htmlFor = topicSel.id;
+  topicSel.add(new Option('All written topics (' + written.length + ')', ''));
+  const topicCounts = new Map();
+  for (const q of written) topicCounts.set(q.topic, (topicCounts.get(q.topic) || 0) + 1);
+  for (const [name, count] of [...topicCounts].sort((a, b) => a[0].localeCompare(b[0]))) {
+    topicSel.add(new Option(name + ' (' + count + ')', name));
+  }
+
+  const formRow = el('div', '', 'form-row');
+  const modeWrap = el('div');
+  const modeLbl = el('label', 'Question focus', 'field-lbl');
+  const modeSel = el('select');
+  modeSel.id = 'focus-filter';
+  modeLbl.htmlFor = modeSel.id;
+  modeSel.add(new Option('Unanswered first', 'all'));
+  modeSel.add(new Option('Unanswered only', 'unanswered'));
+  modeSel.add(new Option('Illustrated signs only', 'illustrated'));
+  modeSel.add(new Option('Saved bookmarks (' + stats.bookmarked.length + ')', 'bookmarked'));
+  modeWrap.append(modeLbl, modeSel);
+
+  const sizeWrap = el('div');
+  const sizeLbl = el('label', 'Session length', 'field-lbl');
+  const sizeSel = el('select');
+  sizeSel.id = 'session-size';
+  sizeLbl.htmlFor = sizeSel.id;
+  sizeSel.add(new Option('10 questions', '10'));
+  sizeSel.add(new Option('20 questions', '20'));
+  sizeSel.add(new Option('50 questions', '50'));
+  sizeWrap.append(sizeLbl, sizeSel);
+  formRow.append(modeWrap, sizeWrap);
+
+  const actions = el('div', '', 'study-actions');
+  const startBtn = btn('Start practice', () => {
+    let pool = written.filter(q => !topicSel.value || q.topic === topicSel.value);
+    if (modeSel.value === 'unanswered') pool = pool.filter(q => !Object.hasOwn(history.answers, q.id));
+    else if (modeSel.value === 'illustrated') pool = pool.filter(q => q.images.length > 0);
+    else if (modeSel.value === 'bookmarked') pool = questions.filter(q => history.bookmarks[q.id]);
+    if (!pool.length) {
+      alert('No questions match that filter right now. Try choosing "All written topics" or "Unanswered first".');
+      return;
+    }
+    start('practice', pool, Number(sizeSel.value));
+  }, 'primary');
+  const wrongBtn = btn('Review missed (' + stats.missed.length + ')', () => start('review', stats.missed, 20));
+  wrongBtn.disabled = !stats.missed.length;
+  const videoBtn = btn('Practice video questions (' + hazards.length + ')', () => start('practice', hazards, 5));
+  actions.append(startBtn, wrongBtn, videoBtn);
+
+  // Per-topic progress details
+  const mastery = el('details');
+  mastery.append(el('summary', 'Topic progress & reset'));
+  for (const [name, count] of [...topicCounts].sort((a, b) => a[0].localeCompare(b[0]))) {
+    const qs = written.filter(q => q.topic === name);
+    const done = qs.filter(q => Object.hasOwn(history.answers, q.id));
+    const ok = done.filter(q => history.answers[q.id] === true).length;
+    const row = el('div', '', 'topic-row');
+    row.append(
+      el('span', name),
+      el('span', done.length + '/' + count + (done.length ? ' (' + Math.round(ok / done.length * 100) + '%)' : ''), 'muted')
+    );
+    mastery.append(row);
+  }
+  const resetWrap = el('p');
+  resetWrap.append(btn('Reset ' + info.label.toLowerCase() + ' progress', () => {
+    if (!confirm('Clear all saved answers, bookmarks, and timed scores for ' + info.label + '?')) return;
+    saved[track] = emptyTrack();
+    save();
+    renderStudy(true);
+  }, 'danger'));
+  mastery.append(resetWrap);
+
+  study.append(topicLbl, topicSel, formRow, actions, mastery);
+
+  // Right panel: Timed exam + official links
+  const exam = el('section', '', 'panel');
+  exam.append(
+    el('h2', '2026 Timed exam practice'),
+    el('p', info.examNote),
+    el('p', 'Pick the official 2026 exam mix (45 written + 5 video clips, needs internet for clips) or 50 written questions completely offline.', 'muted')
+  );
+  const examActions = el('div', '', 'study-actions');
+  examActions.append(
+    btn('Start official 2026 mix (45 written + 5 videos)', () => startOfficialMix(written, hazards), 'primary'),
+    btn('Start offline timed exam (50 written)', () => start('mock', written, 50)),
+    btn('Open Official Gov Tests Hub', () => { view = 'official'; renderView(true); })
+  );
+  exam.append(examActions);
+  if (history.mock) {
+    const last = el('p');
+    last.append(document.createTextNode('Last timed score: ' + history.mock.score + '%'));
+    last.append(el('span', history.mock.score >= 85 ? 'PASS' : 'NEEDS 85%', 'badge ' + (history.mock.score >= 85 ? 'pass' : 'fail')));
+    exam.append(last);
+  }
+  if (history.scores?.length > 1) {
+    const past = el('details');
+    past.append(el('summary', 'Recent timed scores (' + history.scores.length + ')'));
+    const list = el('ul');
+    history.scores.forEach(a => list.append(el('li', new Date(a.time).toLocaleDateString() + ' — ' + a.score + '%' + (a.score >= 85 ? ' (Pass)' : ''))));
+    past.append(list);
+    exam.append(past);
+  }
+
+  exam.append(el('h3', 'Official government links'));
+  const linkList = el('div', '', 'link-list');
+  const addTaggedLink = (label, url, langLabel, langCls) => {
+    const row = el('div', '', 'link-item');
+    row.append(link(label, url), el('span', langLabel, 'badge ' + langCls));
+    linkList.append(row);
+  };
+  addTaggedLink('Official MVDIS mock simulator', URLS.mock, 'Pick English on page', 'zh');
+  addTaggedLink('MVDIS online test booking', URLS.booking, 'Chinese — see Guide', 'zh');
+  if (track === 'scooter') {
+    addTaggedLink('Mandatory pre-booking hazard test', URLS.hpt, 'Chinese — see Guide', 'zh');
+  }
+  addTaggedLink('Official English PDF question bank', info.source, 'English', 'en');
+  addTaggedLink('Foreigner license rules (THB)', info.rules, 'English', 'en');
+  exam.append(linkList);
+
+  layout.append(study, exam);
+
+  // Quick callout to Foreigner Guide & Checklist
+  const quick = el('section', '', 'panel');
+  quick.append(
+    el('h2', 'New to driving in Taiwan?'),
+    el('p', 'Read the built-in English Foreigner Guide for road-sign Chinese characters (停, 慢, 待轉區, 禁行機車), curb colors, two-stage left turns, and click-by-click walkthroughs of Taiwan’s Chinese-only DMV websites.')
+  );
+  const quickBtns = el('div', '', 'actions');
+  quickBtns.append(
+    btn('Open Foreigner Guide', () => { view = 'guide'; renderView(true); }),
+    btn('Open Foreigner Licensing Checklist', () => { view = 'checklist'; renderView(true); }),
+    btn('Search All Questions', () => { view = 'browse'; renderView(true); })
+  );
+  quick.append(quickBtns);
+
+  screen.replaceChildren(hero, layout, quick);
+  if (focus) title.focus();
+}
+
+function renderBrowse(focus = false) {
+  const info = config[track];
+  const questions = banks[track];
+  const history = saved[track];
+
+  const panel = el('section', '', 'panel');
+  const title = heading('h1', 'Search ' + info.label.toLowerCase() + ' question bank');
+  title.style.fontSize = 'clamp(1.4rem,3.8vw,2rem)';
+  panel.append(title, el('p', 'Search by any English keyword (e.g., alcohol, two-stage, red line, helmet, freeway, pedestrian, ROC, fine).', 'muted'));
+
+  const searchInput = el('input');
+  searchInput.type = 'search';
+  searchInput.placeholder = 'Type a keyword to filter ' + questions.length.toLocaleString() + ' questions...';
+  searchInput.value = browseState.query;
+  searchInput.setAttribute('aria-label', 'Search questions');
+
+  const controls = el('div', '', 'form-row');
+  controls.style.marginTop = '10px';
+  const topicSel = el('select');
+  topicSel.setAttribute('aria-label', 'Filter by topic');
+  topicSel.add(new Option('All topics (' + questions.length + ')', ''));
+  for (const t of [...new Set(questions.map(q => q.topic))].sort()) {
+    topicSel.add(new Option(t, t));
+  }
+  topicSel.value = browseState.topic;
+
+  const filterSel = el('select');
+  filterSel.setAttribute('aria-label', 'Filter by status');
+  filterSel.add(new Option('All questions', 'all'));
+  filterSel.add(new Option('Illustrated signs & diagrams', 'illustrated'));
+  filterSel.add(new Option('Missed questions only', 'missed'));
+  filterSel.add(new Option('Saved bookmarks only', 'bookmarked'));
+  filterSel.add(new Option('Hazard video questions only', 'video'));
+  filterSel.value = browseState.filter;
+  controls.append(topicSel, filterSel);
+
+  const toggleRow = el('div', '', 'actions');
+  toggleRow.style.marginBottom = '12px';
+  const ansToggle = btn(browseState.showAnswers ? 'Hide answers' : 'Show answers', () => {
+    browseState.showAnswers = !browseState.showAnswers;
+    renderBrowse(false);
+  });
+  const resultsWrap = el('div');
+  const countLine = el('p', '', 'muted');
+
+  const getFiltered = () => {
+    const qText = browseState.query.trim().toLowerCase();
+    return questions.filter(q => {
+      if (browseState.topic && q.topic !== browseState.topic) return false;
+      if (browseState.filter === 'illustrated' && !q.images.length) return false;
+      if (browseState.filter === 'missed' && history.answers[q.id] !== false) return false;
+      if (browseState.filter === 'bookmarked' && !history.bookmarks[q.id]) return false;
+      if (browseState.filter === 'video' && !q.video) return false;
+      if (qText) {
+        const hay = (q.prompt + ' ' + q.choices.join(' ') + ' ' + q.topic + ' ' + q.id).toLowerCase();
+        if (!hay.includes(qText)) return false;
+      }
+      return true;
+    });
+  };
+
+  const drawResults = () => {
+    const matches = getFiltered();
+    countLine.textContent = 'Showing ' + Math.min(matches.length, browseState.limit) + ' of ' + matches.length.toLocaleString() + ' matching questions.';
+    resultsWrap.replaceChildren();
+    if (!matches.length) {
+      resultsWrap.append(el('p', 'No matching questions found. Try a broader keyword or reset filters.', 'muted'));
+      return;
+    }
+    const practiceBtn = btn('Practice these (' + Math.min(matches.length, 20) + ' questions)', () => {
+      start('practice', matches, Math.min(matches.length, 20));
+    }, 'primary');
+    practiceBtn.style.marginBottom = '12px';
+    resultsWrap.append(practiceBtn);
+
+    matches.slice(0, browseState.limit).forEach(q => {
+      const card = el('article', '', 'browse-card');
+      const meta = el('div', '', 'browse-meta');
+      const idLabel = String(q.id).startsWith('video-') ? 'Video #' + q.id.replace('video-', '') : 'Q#' + q.id;
+      meta.append(el('span', idLabel + ' · ' + q.topic + ' · PDF p.' + q.page));
+      const saveBtn = btn(history.bookmarks[q.id] ? '★ Saved' : '☆ Save', () => {
+        if (history.bookmarks[q.id]) delete history.bookmarks[q.id];
+        else history.bookmarks[q.id] = true;
+        save();
+        drawResults();
+      }, history.bookmarks[q.id] ? 'saved-btn' : 'subtle');
+      saveBtn.style.minHeight = '34px';
+      saveBtn.style.padding = '4px 10px';
+      meta.append(saveBtn);
+      card.append(meta, el('strong', q.prompt));
+
+      if (q.video) {
+        const vp = el('p');
+        vp.append(link('Watch official video (new tab)', q.video));
+        card.append(vp);
+      }
+      if (q.images.length) {
+        const imgs = el('div', '', 'images');
+        imgs.style.marginTop = '8px';
+        q.images.forEach((src, i) => imgs.append(figure(src, 'Official illustration ' + (i + 1))));
+        card.append(imgs);
+      }
+      const ol = el('ol', '', 'browse-choices');
+      q.choices.forEach((c, idx) => {
+        const isAns = browseState.showAnswers && idx === q.answer;
+        const li = el('li', (c || 'Illustrated option ' + (idx + 1)) + (isAns ? ' ✓' : ''), isAns ? 'is-correct' : '');
+        ol.append(li);
+      });
+      card.append(ol);
+      const tip = browseState.showAnswers ? getTip(q) : '';
+      if (tip) card.append(el('div', 'Foreigner tip: ' + tip, 'tip-box'));
+      resultsWrap.append(card);
+    });
+
+    if (matches.length > browseState.limit) {
+      resultsWrap.append(btn('Show 30 more', () => {
+        browseState.limit += 30;
+        drawResults();
+      }));
+    }
+  };
+
+  searchInput.addEventListener('input', () => {
+    browseState.query = searchInput.value;
+    browseState.limit = 30;
+    drawResults();
+  });
+  topicSel.addEventListener('change', () => {
+    browseState.topic = topicSel.value;
+    browseState.limit = 30;
+    drawResults();
+  });
+  filterSel.addEventListener('change', () => {
+    browseState.filter = filterSel.value;
+    browseState.limit = 30;
+    drawResults();
+  });
+
+  toggleRow.append(ansToggle, btn('Clear filters', () => {
+    browseState = {query:'', topic:'', filter:'all', showAnswers:browseState.showAnswers, limit:30};
+    renderBrowse(false);
+  }, 'subtle'));
+
+  panel.append(searchInput, controls, toggleRow, countLine, resultsWrap);
+  drawResults();
+  screen.replaceChildren(panel);
+  if (focus) title.focus();
+}
+
+function renderGuide(focus = false) {
+  const wrap = el('div');
+
+  const intro = el('section', '', 'route');
+  const title = heading('h1', 'Foreigner’s Taiwan Driving Guide');
+  intro.append(title, el('p', 'Everything foreigners need in plain English: road-sign Chinese characters, Taiwan-only rules, plate colors, and click-by-click guides for Chinese DMV portals.'));
+  wrap.append(intro);
+
+  // 1. Rules that surprise foreigners
+  const rulesPanel = el('section', '', 'panel');
+  rulesPanel.append(el('h2', '1. Taiwan road rules that surprise foreigners'));
+  const rGrid = el('div', '', 'rule-grid');
+  [
+    ['No Right Turn on Red', 'Unlike the US/Canada, turning right on a red light is ILLEGAL in Taiwan unless a green right-arrow signal is lit.'],
+    ['Two-Stage Left Turns (Hook Turns)', 'On multi-lane roads with a blue scooter hook-turn sign, white-plate scooters must ride straight to the white waiting box (待轉區) on the far right corner, stop, and wait for the cross-street green light.'],
+    ['Red, Yellow & White Curb Lines', 'Red = No stopping or parking anytime. Yellow = No parking 7am–8pm (max 3-min drop-off with driver present). White = Parking allowed unless posted otherwise.'],
+    ['License Plate Colors & Roads', 'Green (<50cc) & White (51–250cc) = regular roads only (NO freeways/expressways). Yellow (251–550cc) & Red (>550cc) = expressways allowed.'],
+    ['Zero-Tolerance DUI Laws', 'Breath alcohol ≥0.15 mg/L (blood ≥0.03%) means heavy fines and license suspension. ≥0.25 mg/L is a criminal charge.'],
+    ['Pedestrian Crosswalk 3-Meter Rule', 'You must stop and stay at least 3 meters (about 3 zebra stripes) away from pedestrians on a crosswalk. Fines reach NT$6,000.'],
+    ['ROC Calendar Years in Questions', 'Taiwan’s official calendar starts in 1912. Add 1911 to any ROC year: ROC Year 115 = 2026 · Year 112 = 2023.'],
+    ['2026 Exam Format (Both Scooter & Car)', '50 multiple-choice questions, 30 minutes, 2 points each. Pass mark is 85% (43/50, max 7 mistakes). True/False questions were phased out in 2026.']
+  ].forEach(([head, body]) => {
+    const card = el('div', '', 'rule-card');
+    card.append(el('strong', head), el('span', body));
+    rGrid.append(card);
+  });
+  rulesPanel.append(rGrid);
+  wrap.append(rulesPanel);
+
+  // 2. Chinese Road Sign Cheat Sheet
+  const signPanel = el('section', '', 'panel');
+  signPanel.append(
+    el('h2', '2. Essential Chinese characters on Taiwan road signs'),
+    el('p', 'Even on the English test, official traffic sign photos and street markings use Traditional Chinese characters. Learn these 18 high-frequency signs:', 'muted')
+  );
+  const sGrid = el('div', '', 'sign-grid');
+  ROAD_SIGNS.forEach(([hanzi, pinyin, meaning]) => {
+    const card = el('div', '', 'sign-card');
+    card.append(el('span', hanzi, 'hanzi'), el('span', pinyin, 'pinyin'), el('span', meaning));
+    sGrid.append(card);
+  });
+  signPanel.append(sGrid);
+  wrap.append(signPanel);
+
+  // 3. Navigating Chinese Government Websites + ROC Birthday Converter
+  const govPanel = el('section', '', 'panel');
+  govPanel.append(el('h2', '3. How to navigate Taiwan’s Chinese DMV websites'));
+
+  const rocBox = el('div', '', 'roc-box');
+  rocBox.append(
+    el('strong', 'Handy Tool: ROC Birthday Converter (for Chinese DMV forms)'),
+    el('div', 'Taiwan’s DMV portals ask for your birth date in 7-digit ROC format (YYYMMDD = Year − 1911). Pick your birthday to get your exact code — calculated 100% locally in your browser, never sent anywhere.', 'muted')
+  );
+  const rocRow = el('div', '', 'roc-row');
+  const dateWrap = el('div');
+  const dateLbl = el('label', 'Your Western birth date', 'field-lbl');
+  const dateInput = el('input');
+  dateInput.type = 'date';
+  dateInput.id = 'roc-date';
+  dateInput.value = '1990-05-09';
+  dateLbl.htmlFor = dateInput.id;
+  dateWrap.append(dateLbl, dateInput);
+  const copyBtn = btn('Copy ROC code', () => {
+    const code = computeRoc(dateInput.value);
+    if (!code) return;
+    if (navigator.clipboard?.writeText) {
+      navigator.clipboard.writeText(code).then(() => {
+        copyBtn.textContent = 'Copied!';
+        setTimeout(() => { copyBtn.textContent = 'Copy ROC code'; }, 1500);
+      }).catch(() => {});
+    }
+  });
+  rocRow.append(dateWrap, copyBtn);
+  const rocOut = el('div', '', 'roc-result');
+  const rocExplain = el('small', '', 'muted');
+  const computeRoc = val => {
+    if (!val || !/^\d{4}-\d{2}-\d{2}$/.test(val)) return '';
+    const [y, m, d] = val.split('-').map(Number);
+    const rocY = y - 1911;
+    if (rocY <= 0) return '';
+    return String(rocY).padStart(3, '0') + String(m).padStart(2, '0') + String(d).padStart(2, '0');
+  };
+  const updateRoc = () => {
+    const code = computeRoc(dateInput.value);
+    if (!code) {
+      rocOut.textContent = 'Pick a date after 1911';
+      rocExplain.textContent = '';
+      copyBtn.disabled = true;
+      return;
+    }
+    const [y, m, d] = dateInput.value.split('-').map(Number);
+    rocOut.textContent = 'ROC Code: ' + code;
+    rocExplain.textContent = y + ' − 1911 = ROC Year ' + (y - 1911) + ' (' + code.slice(0, 3) + '), Month ' + code.slice(3, 5) + ', Day ' + code.slice(5, 7);
+    copyBtn.disabled = false;
+  };
+  dateInput.addEventListener('input', updateRoc);
+  updateRoc();
+  rocBox.append(rocRow, rocOut, rocExplain);
+  govPanel.append(rocBox);
+
+  govPanel.append(el('h3', 'A. Official MVDIS Online Mock Simulator'));
+  const ol1 = el('ol', '', 'steps-ol');
+  [
+    'Open the MVDIS simulator link below (page loads in Chinese by default).',
+    'Look for the language dropdown or "English" button near the top of the screen and select English.',
+    'Choose "Motorcycle" or "Car", then start the 50-question timed mock test (includes hazard videos).'
+  ].forEach(s => ol1.append(el('li', s)));
+  govPanel.append(ol1, el('p').appendChild(link('Open MVDIS Mock Simulator', URLS.mock)).parentNode);
+
+  govPanel.append(el('h3', 'B. Mandatory Scooter Hazard Perception Pre-Test (Chinese-only site)'));
+  govPanel.append(el('p', 'Before you can book a Taiwan scooter exam online, you MUST finish this free 5-minute online video exercise:', 'muted'));
+  const ol2 = el('ol', '', 'steps-ol');
+  [
+    'Open hpt.thb.gov.tw/videotest (using Chrome or Edge right-click → "Translate to English" helps a lot).',
+    'Click the main button labeled 測驗去 (Go to Test).',
+    'Enter your ARC/APRC ID number (身分證字號/居留證號) and your birth date in ROC format: YYYMMDD (Example: born May 9, 1990 → 1990 − 1911 = 079 → enter 0790509).',
+    'Watch 3 short riding clips and click/tap the screen whenever you spot a hazard developing. Finish to the completion screen — your pass syncs automatically to MVDIS.'
+  ].forEach(s => ol2.append(el('li', s)));
+  govPanel.append(ol2, el('p').appendChild(link('Open Scooter Hazard Pre-Test (hpt.thb.gov.tw)', URLS.hpt)).parentNode);
+
+  govPanel.append(el('h3', 'C. MVDIS Online Exam Booking (考照預約報名)'));
+  const ol3 = el('ol', '', 'steps-ol');
+  [
+    'Open the MVDIS booking page below and click "English" in the top-right header (or use browser translation).',
+    'Choose License Type: 普通重型機車 (Ordinary Heavy Motorcycle, 51–250cc) or 普通小型車 (Ordinary Small Car).',
+    'Pick your Supervision Office (e.g., Taipei City 臺北市區監理所, Shilin 士林監理站, New Taipei/Banqiao 臺北區監理所) and select an open date.',
+    'Enter your ARC/APRC number, ROC birth date (Year − 1911), phone number, and email. Save your confirmation screenshot!'
+  ].forEach(s => ol3.append(el('li', s)));
+  govPanel.append(ol3, el('p').appendChild(link('Open MVDIS Exam Booking', URLS.booking)).parentNode);
+  wrap.append(govPanel);
+
+  // 4. Exam Day & Typical Fees
+  const dayPanel = el('section', '', 'panel');
+  dayPanel.append(el('h2', '4. Exam day walkthrough & typical fees (NT$)'));
+  const ol4 = el('ol', '', 'steps-ol');
+  [
+    'Medical Checkup (體檢): ~NT$150–250 at an approved clinic (often right across the street from the DMV office). Valid for 1 year.',
+    'Check-in & Written Exam: Bring ARC/APRC (>6 months valid), passport, 3 recent 1-inch photos, and medical form. Registration fee is ~NT$250 (scooter) or ~NT$450 (car). Tell the counter you want the English computer exam.',
+    'Practical Skills Test: Pass the written exam (85%+) to proceed to the skills track (scooter rental ~NT$50 if needed) and on-road test (for cars).',
+    'Safety Lecture & License Pickup: First-time scooter applicants attend a 2-hour safety class (ask for English schedule). Pay NT$200 for same-day license printing!'
+  ].forEach(s => ol4.append(el('li', s)));
+  dayPanel.append(ol4);
+  // 5. DMV & Clinic Counter Phrase Card
+  const phrasePanel = el('section', '', 'panel');
+  phrasePanel.append(
+    el('h2', '5. Show-your-phone phrase card (Clinic & DMV counter)'),
+    el('p', 'Don’t read or speak fluent Mandarin? Just show these cards on your phone at the medical clinic or Motor Vehicles Office counter:', 'muted')
+  );
+  const pGrid = el('div', '', 'phrase-grid');
+  [
+    ['Driver’s license medical checkup (scooter)', '我要辦普通重型機車考照體檢', 'Wǒ yào bàn pǔtōng zhòngxíng jīchē kǎozhào tǐjiǎn'],
+    ['Driver’s license medical checkup (car)', '我要辦普通小型車考照體檢', 'Wǒ yào bàn pǔtōng xiǎoxíngchē kǎozhào tǐjiǎn'],
+    ['I booked the English written exam', '我有預約英文筆試', 'Wǒ yǒu yùyuē Yīngwén bǐshì'],
+    ['I’d like to rent a test scooter', '我要租考照用機車', 'Wǒ yào zū kǎozhào yòng jīchē'],
+    ['When is the English safety lecture?', '請問英文道安講習是什麼時候？', 'Qǐngwèn Yīngwén dào’ān jiǎngxí shì shénme shíhòu?'],
+    ['I want to exchange my foreign license', '我要辦理外國駕照換領台灣駕照', 'Wǒ yào bànlǐ wàiguó jiàzhào huànlǐng Táiwān jiàzhào']
+  ].forEach(([enTxt, zhTxt, pyTxt]) => {
+    const card = el('div', '', 'phrase-card');
+    card.append(el('strong', enTxt), el('span', zhTxt, 'phrase-zh'), el('span', pyTxt, 'phrase-py'));
+    pGrid.append(card);
+  });
+  phrasePanel.append(pGrid);
+  const actions = el('div', '', 'actions');
+  actions.append(
+    btn('Go to Licensing Checklist', () => { view = 'checklist'; renderView(true); }, 'primary'),
+    btn('Back to Study', () => { view = 'study'; renderView(true); })
+  );
+  phrasePanel.append(actions);
+  wrap.append(dayPanel, phrasePanel);
+
+  screen.replaceChildren(wrap);
+  if (focus) title.focus();
+}
+
+function renderChecklist(focus = false) {
+  const info = config[track];
+  const history = saved[track];
+  const guide = el('section', '', 'panel');
+  const title = heading('h1', 'Foreigner ' + info.label.toLowerCase() + ' licensing checklist');
+  title.style.fontSize = 'clamp(1.45rem,4vw,2.1rem)';
+  guide.append(
+    title,
+    el('p', 'For ARC, APRC, and Employment Gold Card holders from any country. Your checkmarks save automatically on this device.', 'muted')
+  );
+  info.checks.forEach((item, i) => {
+    const label = el('label', '', 'check');
+    const check = el('input');
+    check.type = 'checkbox';
+    check.checked = Boolean(history.checks[i]);
+    check.addEventListener('change', () => {
+      history.checks[i] = check.checked;
+      save();
+    });
+    label.append(check, el('span', item));
+    guide.append(label);
+  });
+
+  guide.append(el('h3', 'Official English & DMV resources'));
+  const guideLinks = el('div', '', 'link-list');
+  const addRow = (lbl, url, tag, cls) => {
+    const r = el('div', '', 'link-item');
+    r.append(link(lbl, url), el('span', tag, 'badge ' + cls));
+    guideLinks.append(r);
+  };
+  addRow('Official ' + info.label.toLowerCase() + ' application rules (THB)', info.rules, 'English', 'en');
+  addRow('Foreign driver’s license exchange & reciprocity (all countries)', URLS.reciprocity, 'English', 'en');
+  addRow('Taiwan Highway Bureau English Portal', URLS.thbEn, 'English', 'en');
+  addRow('Official ' + info.edition + ' English question bank PDFs', info.source, 'English', 'en');
+  if (track === 'scooter') addRow('Mandatory pre-booking hazard perception test', URLS.hpt, 'Chinese — see Guide', 'zh');
+  addRow('MVDIS online test booking', URLS.booking, 'Chinese — see Guide', 'zh');
+
+  const controls = el('div', '', 'actions next');
+  controls.append(
+    btn('Back to Study', () => { view = 'study'; renderView(true); }),
+    btn('Read Foreigner Guide', () => { view = 'guide'; renderView(true); }, 'primary')
+  );
+  guide.append(guideLinks, controls);
+  screen.replaceChildren(guide);
+  if (focus) title.focus();
+}
+
+function renderOfficialTests(focus = false) {
+  const info = config[track];
+  const questions = banks[track];
+  const written = questions.filter(q => !q.video);
+  const hazards = questions.filter(q => q.video);
+  const wrap = el('div');
+
+  const hero = el('section', '', 'route');
+  const title = heading('h1', 'Official Government Practice Tests');
+  hero.append(
+    title,
+    el('p', 'Direct access to Taiwan’s official MOTC / MVDIS test simulators, hazard video portals, and our built-in 2026 official exam mix.')
+  );
+  wrap.append(hero);
+
+  const note = el('section', '', 'panel');
+  note.append(
+    el('h2', 'About this unofficial community gift'),
+    el('p', 'This site is a free, unofficial community project created to help foreigners in Taiwan pass their scooter and car exams in English. All 2,032 questions inside this app come directly from Taiwan’s official 2026 (ROC Year 115) Highway Bureau English question banks.'),
+    el('p', 'Because Taiwan’s government test servers (mvdis.gov.tw and hpt.thb.gov.tw) block embedding inside other websites for security, the official portals open cleanly in a new tab with step-by-step English instructions below.', 'muted')
+  );
+  wrap.append(note);
+
+  const simPanel = el('section', '', 'panel');
+  simPanel.append(
+    el('h2', '1. Built-in Official 2026 Exam Simulator (' + info.label + ')'),
+    el('p', 'Practice the exact 2026 Taiwan exam structure right here in clean English — 50 multiple-choice questions, 30 minutes, 2 points each, 85% (43/50) to pass:')
+  );
+  const simActions = el('div', '', 'actions');
+  simActions.append(
+    btn('Start Official 2026 Mix (45 written + 5 hazard videos)', () => startOfficialMix(written, hazards), 'primary'),
+    btn('Start Offline Exam (50 written only)', () => start('mock', written, 50)),
+    btn('Practice Official Hazard Videos (' + hazards.length + ')', () => start('practice', hazards, 5))
+  );
+  simPanel.append(simActions);
+  wrap.append(simPanel);
+
+  const govGrid = el('div', '', 'layout');
+
+  // Card 1: MVDIS Official Mock Exam
+  const mvdis = el('section', '', 'panel');
+  const hMv = el('h2', '2. MVDIS Official Online Mock Exam');
+  hMv.append(el('span', 'Switch to English on page', 'badge zh'));
+  mvdis.append(
+    hMv,
+    el('p', 'The exact computer test interface run by Taiwan’s Motor Vehicles Office (MVDIS). Great for doing 1–2 final dress rehearsals before exam day.'),
+    el('p', 'How to switch to English: Open the link → select "English" in the language selector at the top → choose Motorcycle or Car → click Start.', 'muted'),
+    el('p').appendChild(link('Launch Official MVDIS Mock Simulator ↗', URLS.mock)).parentNode
+  );
+
+  // Card 2: Mandatory Scooter Hazard Pre-Test
+  const hpt = el('section', '', 'panel');
+  const hHpt = el('h2', '3. Official Motorcycle Hazard Pre-Test');
+  hHpt.append(el('span', 'Chinese — Mandatory for Scooter', 'badge zh'));
+  hpt.append(
+    hHpt,
+    el('p', 'Official Highway Bureau interactive hazard-perception video exercise. Scooter test applicants MUST complete this online before MVDIS allows booking an exam date.'),
+    el('p', 'Quick English steps: Click 測驗去 (Start) → enter ARC/APRC ID + ROC birthday (Year − 1911, e.g. 1990 = 0790509) → tap when hazards appear in 3 clips.', 'muted'),
+    el('p').appendChild(link('Launch Official Hazard Pre-Test (hpt.thb.gov.tw) ↗', URLS.hpt)).parentNode
+  );
+  govGrid.append(mvdis, hpt);
+  wrap.append(govGrid);
+
+  // Card 3: Official Downloads & Booking
+  const dlPanel = el('section', '', 'panel');
+  dlPanel.append(el('h2', '4. Official Highway Bureau PDFs, Video Packs & Exam Booking'));
+  const list = el('div', '', 'link-list');
+  const addRow = (lbl, url, tag, cls) => {
+    const r = el('div', '', 'link-item');
+    r.append(link(lbl, url), el('span', tag, 'badge ' + cls));
+    list.append(r);
+  };
+  addRow('Official 2026 English Scooter Question Bank PDFs (THB)', URLS.scooterBank, 'English', 'en');
+  addRow('Official 2026 English Car Question Bank PDFs (THB)', URLS.carBank, 'English', 'en');
+  addRow('Official Scooter Hazard Videos — Full Download Pack', URLS.scooterVideos, 'Official Video Pack', 'en');
+  addRow('Official Car Hazard Videos — Full Download Pack', URLS.carVideos, 'Official Video Pack', 'en');
+  addRow('Official Foreign License Exchange & Reciprocity Guide', URLS.reciprocity, 'English', 'en');
+  addRow('MVDIS Official Online Exam Booking (考照預約報名)', URLS.booking, 'Chinese — see Guide', 'zh');
+  dlPanel.append(list);
+  const backRow = el('div', '', 'actions next');
+  backRow.append(
+    btn('Read Full Chinese Portal Walkthrough', () => { view = 'guide'; renderView(true); }),
+    btn('Back to Study', () => { view = 'study'; renderView(true); }, 'primary')
+  );
+  dlPanel.append(backRow);
+  wrap.append(dlPanel);
+
+  screen.replaceChildren(wrap);
+  if (focus) title.focus();
+}
+
+function shuffleCopy(list) {
+  const arr = [...list];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function startOfficialMix(written, hazards) {
+  const pickedWritten = shuffleCopy(written).slice(0, 45);
+  const pickedVideos = shuffleCopy(hazards).slice(0, 5);
+  const combined = [...pickedWritten, ...pickedVideos];
+  session = {mode: 'mock', questions: combined, selected: [], index: 0, deadline: Date.now() + 30 * 60 * 1000};
+  renderChrome();
+  renderQuestion();
+  timer = setInterval(tick, 250);
+}
+
+function start(mode, bank, count) {
+  const questions = shuffleCopy(bank);
+  if (mode === 'practice') {
+    const answers = saved[track].answers;
+    questions.sort((a, b) => Number(Object.hasOwn(answers, a.id)) - Number(Object.hasOwn(answers, b.id)));
+  }
+  session = {mode, questions: questions.slice(0, count), selected: [], index: 0, deadline: Date.now() + 30 * 60 * 1000};
+  renderChrome();
+  renderQuestion();
+  if (mode === 'mock') timer = setInterval(tick, 250);
+}
+
+function tick() {
+  if (!session) return 0;
+  const left = Math.max(0, Math.ceil((session.deadline - Date.now()) / 1000));
+  const display = document.querySelector('#timer');
+  if (display) display.textContent = Math.floor(left / 60) + ':' + String(left % 60).padStart(2, '0');
+  if (!left) finish(true);
+  return left;
+}
+
+function figure(data, alt) {
+  const image = el('img');
+  image.src = data;
+  image.alt = alt;
+  return image;
+}
+
+function renderQuestion(focus = true) {
+  const {mode, questions, selected, index} = session;
+  const question = questions[index];
+  const choice = selected[index];
+  const mock = mode === 'mock';
+  const isSaved = Boolean(saved[track].bookmarks[question.id]);
+
+  const status = el('div', '', 'status');
+  const leftStatus = el('span', config[track].label + ' · Question ' + (index + 1) + ' of ' + questions.length + ' · ' + question.topic);
+  status.append(leftStatus);
+  if (mock) {
+    const timerLabel = el('span', '', 'timer');
+    timerLabel.id = 'timer';
+    status.append(timerLabel);
+  }
+
+  const progress = el('progress');
+  progress.max = questions.length;
+  progress.value = index + 1;
+  progress.setAttribute('aria-label', 'Question progress');
+
+  const panel = el('section', '', 'panel');
+  const qHead = el('div', '', 'q-head');
+  const title = heading('h1', question.prompt, 'question');
+  const bookmarkBtn = btn(isSaved ? '★ Saved' : '☆ Save', () => {
+    if (saved[track].bookmarks[question.id]) delete saved[track].bookmarks[question.id];
+    else saved[track].bookmarks[question.id] = true;
+    save();
+    renderQuestion(false);
+  }, isSaved ? 'saved-btn' : 'subtle');
+  bookmarkBtn.id = 'bookmark-btn';
+  bookmarkBtn.setAttribute('aria-label', isSaved ? 'Remove bookmark' : 'Bookmark this question');
+  qHead.append(title, bookmarkBtn);
+
+  const figures = el('div', '', 'images');
+  const imageOptions = question.choices.every(text => !text) && question.images.length === 3;
+  if (!imageOptions) question.images.forEach((image, i) => figures.append(figure(image, 'Official question illustration ' + (i + 1))));
+
+  const answers = el('div', '', 'answers');
+  const feedback = el('p', '', 'feedback');
+  feedback.setAttribute('role', 'status');
+
+  question.choices.forEach((text, i) => {
+    const answer = btn('', () => {
+      if (mock && !tick()) return;
+      selected[index] = i;
+      if (!mock) {
+        saved[track].answers[question.id] = i === question.answer;
+        save();
+      }
+      renderQuestion(false);
+      const target = document.querySelector(mock ? '.answers [aria-pressed="true"]' : '#next');
+      if (target) target.focus();
+    });
+    answer.append(el('span', String(i + 1), 'choice-label'));
+    if (imageOptions) answer.append(figure(question.images[i], 'Illustrated option ' + (i + 1)));
+    else answer.append(el('span', text || 'Illustrated option ' + (i + 1)));
+    if (mock) answer.setAttribute('aria-pressed', String(choice === i));
+    if (!mock && choice !== undefined) {
+      answer.disabled = true;
+      if (i === question.answer) {
+        answer.classList.add('correct');
+        answer.append(el('strong', 'Correct'));
+      } else if (i === choice) {
+        answer.classList.add('incorrect');
+        answer.append(el('strong', 'Your answer'));
+      }
+    }
+    answers.append(answer);
+  });
+
+  if (!mock && choice !== undefined) {
+    feedback.textContent = (choice === question.answer ? 'Correct! ' : 'Not quite — the correct answer is option ' + (question.answer + 1) + '. ')
+      + (question.choices[question.answer] || 'Compare the illustration with the highlighted answer.');
+  }
+
+  const controls = el('div', '', 'actions next');
+  controls.append(btn('Exit session', () => { if (leave()) renderView(true); }));
+  if (mock && index > 0) {
+    controls.append(btn('Previous', () => {
+      if (!tick()) return;
+      session.index--;
+      renderQuestion();
+    }));
+  }
+  const next = btn(index === questions.length - 1 ? 'See results' : 'Next question', () => {
+    if (mock && !tick()) return;
+    if (index === questions.length - 1) {
+      if (mock && selected.filter(Number.isInteger).length < questions.length &&
+          !confirm('Submit with unanswered questions?')) return;
+      finish();
+    } else {
+      session.index++;
+      renderQuestion();
+    }
+  }, 'primary');
+  next.id = 'next';
+  next.disabled = !mock && choice === undefined;
+  controls.append(next);
+
+  if (question.video) {
+    const vBox = el('div', '', 'video-box');
+    vBox.append(
+      el('strong', 'Hazard perception video clip: '),
+      link('Watch official video (opens in new tab)', question.video),
+      el('div', 'Videos are hosted on Taiwan Highway Bureau’s Synology Drive (requires internet). Watch the clip, then pick the safest action below.', 'muted')
+    );
+    panel.append(vBox);
+  }
+
+  panel.append(qHead, figures, answers, feedback);
+
+  if (!mock && choice !== undefined) {
+    const tip = getTip(question);
+    if (tip) panel.append(el('div', 'Foreigner tip: ' + tip, 'tip-box'));
+    const id = String(question.id).replace('video-', '');
+    const srcLine = el('p');
+    srcLine.append(link('Official English bank · Question ' + id + ' · PDF page ' + question.page,
+      question.video ? config[track].hazard : config[track].source));
+    panel.append(srcLine);
+  }
+
+  panel.append(controls, el('div', 'Keyboard shortcuts: 1, 2, 3 to answer · Enter or → for next · B to save', 'kbd-hint'));
+  screen.replaceChildren(status, progress, panel);
+  if (mock && !tick()) return;
+  if (focus) title.focus();
+}
+
+function finish(expired = false) {
+  clearInterval(timer);
+  const {mode, questions, selected} = session;
+  const missedPairs = questions
+    .map((q, i) => ({q, chosen: selected[i]}))
+    .filter(item => item.chosen !== item.q.answer);
+  const missed = missedPairs.map(item => item.q);
+  const rightCount = questions.length - missed.length;
+  const score = Math.round((rightCount / questions.length) * 100);
+  const mock = mode === 'mock';
+  if (mock) {
+    questions.forEach((q, i) => { saved[track].answers[q.id] = selected[i] === q.answer; });
+    const attempt = {score, time: Date.now()};
+    saved[track].mock = attempt;
+    saved[track].scores = [attempt, ...(saved[track].scores || [])].slice(0, 10);
+    save();
+  }
+  session = null;
+  renderChrome();
+
+  const panel = el('section', '', 'panel');
+  const title = heading('h1', rightCount + ' / ' + questions.length + ' correct (' + score + '%)');
+  const summary = el('p', (expired ? 'Time is up. ' : '') +
+    (mock ? (score >= 85 ? 'Passed! You met Taiwan’s 85% official passing score (43/50).' : 'Below the 85% passing score (43/50 needed — max 7 mistakes allowed).') : 'Session complete.'));
+  panel.append(title, summary);
+
+  if (missed.length) {
+    panel.append(el('h2', 'Topics to review'));
+    const counts = new Map();
+    for (const q of missed) counts.set(q.topic, (counts.get(q.topic) || 0) + 1);
+    const list = el('ul');
+    [...counts].sort((a, b) => b[1] - a[1]).forEach(([name, count]) => list.append(el('li', name + ' (' + count + ' missed)')));
+    panel.append(list);
+
+    const reviewDetails = el('details');
+    reviewDetails.open = missedPairs.length <= 10;
+    reviewDetails.append(el('summary', 'Review all ' + missedPairs.length + ' missed question' + (missedPairs.length === 1 ? '' : 's')));
+    missedPairs.forEach(({q, chosen}) => {
+      const card = el('div', '', 'review-card');
+      card.append(el('div', q.prompt, 'q-title'));
+      const yourTxt = Number.isInteger(chosen)
+        ? (q.choices[chosen] || 'Illustrated option ' + (chosen + 1))
+        : 'Unanswered';
+      const rightTxt = q.choices[q.answer] || 'Illustrated option ' + (q.answer + 1);
+      card.append(
+        el('div', 'Your answer: ' + yourTxt, 'your-ans'),
+        el('div', 'Correct answer (Option ' + (q.answer + 1) + '): ' + rightTxt, 'right-ans')
+      );
+      const tip = getTip(q);
+      if (tip) card.append(el('div', 'Foreigner tip: ' + tip, 'tip-box'));
+      reviewDetails.append(card);
+    });
+    panel.append(reviewDetails);
+  }
+
+  const controls = el('div', '', 'actions');
+  if (missed.length) controls.append(btn('Practice missed questions again', () => start('review', missed, Math.min(missed.length, 20)), 'primary'));
+  controls.append(btn('Study menu', () => { view = 'study'; renderView(true); }));
+  panel.append(controls);
+  screen.replaceChildren(panel);
+  title.focus();
+}
+
+// Desktop keyboard shortcuts during quiz sessions
+document.addEventListener('keydown', e => {
+  if (!session) return;
+  if (e.target && ['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) return;
+  if (['1', '2', '3'].includes(e.key)) {
+    const target = document.querySelectorAll('.answers button')[Number(e.key) - 1];
+    if (target && !target.disabled) target.click();
+  } else if (e.key === 'Enter' || e.key === 'ArrowRight') {
+    const nextBtn = document.querySelector('#next');
+    if (nextBtn && !nextBtn.disabled && document.activeElement?.tagName !== 'BUTTON') {
+      e.preventDefault();
+      nextBtn.click();
+    }
+  } else if (e.key === 'ArrowLeft' && session.mode === 'mock' && session.index > 0) {
+    if (tick()) {
+      session.index--;
+      renderQuestion();
+    }
+  } else if (e.key.toLowerCase() === 'b') {
+    const bm = document.querySelector('#bookmark-btn');
+    if (bm) bm.click();
+  }
+});
+
+renderView();
+
+if (!embeddedBanks && 'serviceWorker' in navigator && /^https?:$/.test(location.protocol)) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
+  });
+}
+</script>
+</body>
+</html>
